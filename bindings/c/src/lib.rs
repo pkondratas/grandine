@@ -48,22 +48,24 @@ fn parse_graffiti(string: &str) -> Result<H256> {
 }
 
 pub fn try_run(argc: u64, argv: *const *const c_char) -> Result<()> {
-    println!("Pradzia");
     let args = unsafe {
         std::iter::once("").chain(std::slice::from_raw_parts(argv, argc as usize).into_iter().filter_map(|it| CStr::from_ptr(*it).to_str().ok()))
     };
-    println!("Pries args");
+    
+    println!("Arguments:");
+    for (i, arg) in args.clone().enumerate() {
+        println!("Arg {}: {}", i, arg);
+    }
+
     let args = GrandineArgs::try_parse_from(args)?;
-    println!("Po args");
+
     let config = args.try_into_config()?;
-    println!("Po configo");
+    // println!("{:?}", config.auth_options.secrets_path);
     run(config)
 }
 
 #[no_mangle]
 pub extern "C" fn grandine_run(argc: u64, argv: *const *const c_char) -> u64 {
-    std::env::set_var("RUST_BACKTRACE", "1");
-
     // let argc = argc as usize;
 
     // // Convert the raw pointer `argv` to a Rust slice of pointers
@@ -151,7 +153,6 @@ pub extern "C" fn grandine_run(argc: u64, argv: *const *const c_char) -> u64 {
     //     in_memory: false,
     //     validator_api_config: None,
     // };
-
     if let Err(error) = try_run(argc, argv) {
         error.downcast_ref().map(ClapError::exit);
         error!("{error:?}");

@@ -24,7 +24,7 @@ http_api = { workspace = true }
 slasher = { workspace = true }
 types = { workspace = true }
 thiserror = { workspace = true }
-reqwest = { workspace = true }
+reqwest = { workspace = true, features = ["blocking"]  }
 jni = "0.21.1"
 
 [dev-dependencies]
